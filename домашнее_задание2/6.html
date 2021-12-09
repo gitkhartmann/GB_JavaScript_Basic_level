@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Homework</title>
+</head>
+<body>
+<!--
+Необязательное задание.
+
+Необходимо реализовать функцию, которая будет принимать первым аргументом
+целое положительное число, в следующих трех аргументах функция принимает слова
+в разных склонениях.
+Функция должна возвращать одно из трех переданных в параметры слов подходящее
+под число, которое передано первым аргументом.
+
+Пример:
+console.log(declinationOfNumber(1, "яблоко", "яблока", "яблок")); // "яблоко"
+console.log(declinationOfNumber(2, "мяч", "мяча", "мячей")); // "мяча"
+console.log(declinationOfNumber(5, "стул", "стула", "стульев")); // "стульев"
+
+Функция должна работать с любым словом и любым целым положительным числом.
+Все аргументы, которые будут передаваться функции будут верны.
+-->
+<script>
+  "use strict";
+
+  console.log(declinationOfNumber(1, "стул", "стула", "стульев"));
+  console.log(declinationOfNumber(2, "стул", "стула", "стульев"));
+  console.log(declinationOfNumber(3, "стул", "стула", "стульев"));
+  console.log(declinationOfNumber(44, "стул", "стула", "стульев"));
+  console.log(declinationOfNumber(55, "стул", "стула", "стульев"));
+  console.log(declinationOfNumber(966, "стул", "стула", "стульев"));
+  console.log(declinationOfNumber(367, "стул", "стула", "стульев"));
+  console.log(declinationOfNumber(198, "стул", "стула", "стульев"));
+  console.log(declinationOfNumber(19, "стул", "стула", "стульев"));
+  console.log(declinationOfNumber(100, "стул", "стула", "стульев"));
+  console.log(declinationOfNumber(0, "стул", "стула", "стульев"));
+
+
+  function declinationOfNumber(num, nominative, genitive, ablative) {
+    
+    if (num === 10 && num <= 20) {
+      return ablative;
+    }
+    if (num % 10 === 1) {
+    return nominative;
+    } else if (num % 10 > 1 && num % 10 < 5) {
+    return genitive;
+    } else {
+    return ablative;
+    }
+  }
+
+</script>
+</body>
+</html>
