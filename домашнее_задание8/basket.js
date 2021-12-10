@@ -2,80 +2,76 @@
 
 const basketEl = document.querySelector('.basket');
 document.querySelector('.cartIconWrap').addEventListener('click', () => {
-    basketEl.classList.toggle('hidden');
+	basketEl.classList.toggle('hidden');
 });
 
+const basketTotalValueEl = document.querySelector('.basketTotalValue');
+const basketTotalEl = document.querySelector('.basketTotal');
 const basket = {};
 
 document.querySelector('.featuredItems').addEventListener('click', event => {
+	if (!event.target.closest('.addToCart')) {
+		return;
+	}
+	const featuredItem = event.target.closest('.featuredItem');
+	const id = +featuredItem.dataset.id
+	const name = featuredItem.dataset.name
+	const price = +featuredItem.dataset.price
 
-    if (!event.target.classList.contains('addToCart')) {
-    return;
-        }
-
-    const prodToCart = event.target.closest('.featuredItem').dataset;
-    prodToCart.count ??= 1;
-
-    basket.totalPrice ??= 0;
-    basket.totalCounts ??= 0;
-
-    addToCart(prodToCart);
-
+	addToCart(id, name, price);
 });
 
-function addToCart(prodToCart) {
-    const basketHeaderEl = document.querySelector('.basketHeader');
-    const divEls = basketHeaderEl.children;
+function addToCart(id, name, price) {
+	if (!(id in basket)) {
+		basket[id] = {
+			id,
+			name,
+			price,
+			count: 0,
+		}
+	}
+	basket[id].count++;
+	basketTotalValueEl.textContent = getTotalBasketValue();
+	basketTotalEl.textContent =
+		`Товаров в корзине на сумму: $${getTotalBasketPrice().toFixed(2)}`;
+	renderProductInBasket(id);
+}
 
-    const checkProductInBasket = () => {
-        for (const divEl of divEls) {
-            if (divEl.innerText === prodToCart.name) {
-                return true;
-            }
-        }
-    };
-    
-    const changeCountsAndTotal = () => {
-        for (const divEl of divEls) {
-            if (divEl.innerText === prodToCart.name){
-                divEl.nextElementSibling.textContent = prodToCart.count;
-            }
-            if (divEl.innerText === prodToCart.price){
-                divEl.nextElementSibling.textContent =
-                    (prodToCart.count * prodToCart.price).toFixed(2);
-            }
-        }
-    };
+function getTotalBasketValue() {
+	return Object.values(basket).reduce((acc, product) => acc + product.count, 0);
+}
 
-    const showFinallPriceAndCounts = () => {
-        basket.totalCounts++;
-        basket.totalPrice += +prodToCart.price;
+function getTotalBasketPrice() {
+	return Object.values(basket)
+		.reduce((acc, product) => acc + product.price * product.count, 0);
+}
 
-        const basketTotalDivEl = document.querySelector('.basketTotal');
-        basketTotalDivEl.innerHTML = '';
-        basketTotalDivEl.insertAdjacentHTML('afterbegin', `
-        Товаров в корзине на сумму: ${basket.totalPrice.toFixed(2)} $
-        `);
+function renderProductInBasket(id) {
+	const basketRowEl = basketEl.querySelector(`.basketRow[data-productId="${id}"]`);
+	if (!basketRowEl) {
+		renderNewProductInBasket(id);
+		return;
+	}
+	basketRowEl.querySelector('.productCount').textContent = basket[id].count;
+	basketRowEl.querySelector('.productTotalRow')
+		.textContent = basket[id].count * basket[id].price;
+}
 
-        const basketTotalValueEl = document.querySelector('.basketTotalValue');
-        basketTotalValueEl.innerHTML = '';
-        basketTotalValueEl.insertAdjacentHTML('afterbegin',
-            `${basket.totalCounts}`);
-    };
-    
-    if (!checkProductInBasket()) {
-        basketHeaderEl.insertAdjacentHTML('beforeend', `
-            <div>${prodToCart.name}</div>
-            <div>${prodToCart.count}</div>
-            <div>${prodToCart.price}</div>
-            <div>${prodToCart.price * prodToCart.count}</div>
-        `);
-        showFinallPriceAndCounts();
-        prodToCart.count++;
-    } else {
-        changeCountsAndTotal();
-        showFinallPriceAndCounts();
-        prodToCart.count++;
-    }
-    
+function renderNewProductInBasket(productId) {
+	const product = `
+	<div class="basketRow" data-productId="${productId}">
+		<div>${basket[productId].name}</div>
+		<div>
+			<span class="productCount">${basket[productId].count}</span> шт.
+		</div>
+		<div>$${basket[productId].price}</div>
+		<div>
+			$<span class="productTotalRow">
+			${((basket[productId].count * basket[productId].price).toFixed(2))
+		}
+			</span > шт.
+		</div >
+	</div >
+	`;
+	basketTotalEl.insertAdjacentHTML("beforebegin", product);
 }
